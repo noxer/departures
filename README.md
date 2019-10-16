@@ -24,7 +24,7 @@ Found 5 station(s):
 This should help you identify the station you want to look at. Now you can request the timetable for Alexanderplatz.
 
 ```bash
-$ departures -id="900000100003"
+~$ departures -id="900000100003"
   M6 S Hackescher Markt                          10:19 (-1)
   S7 S Potsdam Hauptbahnhof                      10:20
   U2 U Ruhleben                                  10:20
@@ -32,4 +32,25 @@ $ departures -id="900000100003"
   U5 U Kaulsdorf-Nord                            10:21
   U2 S+U Pankow                                  10:21 (+3)
 [and so on...]
+```
+
+You can limit the lines and directions shown. Multiple values must be separated by a comma.
+
+```bash
+~$ departures -id="900000100003" -filter-line="M4" -filter-destination="S Hackescher Markt"
+M4 S Hackescher Markt 10:57 (-1)
+M4 S Hackescher Markt 11:02 (-1)
+M4 S Hackescher Markt 11:07 (-1)
+M4 S Hackescher Markt 11:13
+```
+
+You can limit the width of the output to make it fit your terminal or for use in wtfutil*.
+
+(* wtfutil sets the WTF_WIDGET_WIDTH environment variable which is automatically recognized by departures)
+
+```bash
+~$ departures -id="900000100003" -width=20
+  S5 S We 10:58
+ 100 S+U  10:58
+ RE1 Fran 10:59 (+1)
 ```
