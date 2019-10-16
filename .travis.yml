@@ -1,0 +1,43 @@
+language: go
+go:
+- 1.x
+
+before_deploy:
+- GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o departures
+- tar -czf departures_linux_amd64.tar.gz departures README.md
+
+- GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o departures
+- tar -czf departures_linux_386.tar.gz departures README.md
+
+- GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o departures
+- tar -czf departures_macos_amd64.tar.gz departures README.md
+
+- GOOS=darwin GOARCH=386 go build -ldflags="-s -w" -o departures
+- tar -czf departures_macos_386.tar.gz departures README.md
+
+- GOOS=freebsd GOARCH=amd64 go build -ldflags="-s -w" -o departures
+- tar -czf departures_freebsd_amd64.tar.gz departures README.md
+
+- GOOS=freebsd GOARCH=386 go build -ldflags="-s -w" -o departures
+- tar -czf departures_freebsd_386.tar.gz departures README.md
+
+- GOOS=linux GOARCH=arm GOARM=5 go build -ldflags="-s -w" -o departures
+- tar -czf departures_raspi.tar.gz departures README.md
+
+deploy:
+  provider: releases
+  api_key:
+    secure: Zs4QQ8leBfsf0Rh4KJRNWe1GNyslQ5kQNzxReYtMjol8gzi8A3fdFPlw9MqGomC6ey8AFqJ1r74yH4dhvCqxUeePkhVixIF35qfKc8ehlAl5Or09Ylec2M95zdK/O4QNhYNm/k8hGK6NGv0i7bXecQyCC50x3ZEfY22CgjZkdiR+ERKwL81sbpyhc8h2dvOfhba8vCVieu4EtiAPsL1KakCd3Pgwa3u2T3QGo22JhX5QaHVmq1jv+7lh11wMFRN5P3k2FXEgCcAzTR3z6FZfuxdQny5ZzP2fLv+VBpbRNmkFgWU0GBLzxfTtU/bSHUwrNMBQqU+TUCWzOoTdtgXxHD6Oq7HIcYxU082QltFV0qJ33RnQ/SROvF+szuPrIaxlVAjLy0lSMdqDQsAKrcpC1mVO8Jx9Hd7VgVcyn3xcHvlpcX3bIXQZeqvcz8W8rqAIGsAhmWBj5y/WwVUJUwMcbWi7Pq3apWRSyJgM7LQ6MK/80yNWrAvYauNNPFPUHZ106k0WR+Y35ggjAQugCjfOazRvWx5ynygBXPbNRcJ/1RTx7B6eGwJET0HEERu7wfHuADZnvBwmCt2apfOY7GpDgYWlgMsgUaujRrKFPSo7d78uZ0GEmIXzsRBHs2vlqMxbPK+9ubyelxOhrDPJQIQNLMEMgAoOzfT6K15MXooYSaI=
+  file:
+  - departures_linux_amd64.tar.gz
+  - departures_linux_386.tar.gz
+  - departures_macos_amd64.tar.gz
+  - departures_macos_386.tar.gz
+  - departures_freebsd_amd64.tar.gz
+  - departures_freebsd_386.tar.gz
+  - departures_raspi.tar.gz
+  skip_cleanup: true
+  draft: true
+  on:
+    repo: noxer/departures
+    tags: true
