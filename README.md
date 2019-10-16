@@ -2,7 +2,8 @@
 Show departure times for your Berlin public transport station
 
 ## install
-Currently we are only offering the source code. You need to have a current Go version installed.
+Currently we are offering binary (pre-)releases and the source code. The binary releases can be found on the [releases](https://github.com/noxer/departures/releases) page. 
+To install from source you need to have a current Go version installed.
 
 ```bash
 go get -u github.com/noxer/departures
