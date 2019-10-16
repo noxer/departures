@@ -50,6 +50,7 @@ func main() {
 
 	var err error
 
+	// check if the user just wants to find the station ID
 	if search != "" {
 		var stations []station
 		err = getJSON(&stations, "https://2.bvg.transport.rest/locations?query=%s&poi=false&addresses=false", search)
@@ -86,9 +87,9 @@ func main() {
 	}
 
 	// initialize the filters
-	fm := filterMap(filterMode)
-	fd := filterMap(filterDestination)
-	fl := filterMap(filterLine)
+	fm := filterSlice(filterMode)
+	fd := filterSlice(filterDestination)
+	fl := filterSlice(filterLine)
 
 	// calculate the length of the columns
 	lenName := 0
@@ -96,20 +97,32 @@ func main() {
 	lenDep := 0
 	from := time.Now().Add(-2 * time.Minute)
 	until := time.Now().Add(time.Hour)
+	filteredDeps := deps[:0] // no need to waste space
 	for _, dep := range deps {
 		if dep.When.Before(from) || dep.When.After(until) {
 			continue
 		}
-		if fm != nil && !fm[strings.ToUpper(dep.Line.Product)] {
+
+		// trim unnecessary whitespace
+		dep.Line.Product = strings.TrimSpace(dep.Line.Product)
+		dep.Direction = strings.TrimSpace(dep.Direction)
+		dep.Line.Name = strings.TrimSpace(dep.Line.Name)
+
+		// apply filters
+		if isFiltered(fm, dep.Line.Product) {
 			continue
 		}
-		if fd != nil && !fd[strings.ToUpper(dep.Direction)] {
+		if isFiltered(fd, dep.Direction) {
 			continue
 		}
-		if fl != nil && !fl[strings.ToUpper(dep.Line.Name)] {
+		if isFiltered(fl, dep.Line.Name) {
 			continue
 		}
 
+		// the entry survived the filters, append it to the filtered list
+		filteredDeps = append(filteredDeps, dep)
+
+		// update the lengths
 		lenName = maxStringLen(dep.Line.Name, lenName)
 		lenDir = maxStringLen(dep.Direction, lenDir)
 		lenDep = maxStringLen(departureTime(dep), lenDep)
@@ -124,20 +137,7 @@ func main() {
 	}
 
 	// render the columns
-	for _, dep := range deps {
-		if dep.When.Before(from) || dep.When.After(until) {
-			continue
-		}
-		if fm != nil && !fm[strings.ToUpper(dep.Line.Product)] {
-			continue
-		}
-		if fd != nil && !fd[strings.ToUpper(dep.Direction)] {
-			continue
-		}
-		if fl != nil && !fl[strings.ToUpper(dep.Line.Name)] {
-			continue
-		}
-
+	for _, dep := range filteredDeps {
 		departureColor := color.HiGreenString
 		if dep.Delay > 0 {
 			departureColor = color.RedString
@@ -262,17 +262,29 @@ func departureTime(r result) string {
 	return fmt.Sprintf("%s (%+d)", r.When.Format("15:04"), r.Delay/60)
 }
 
-func filterMap(filter string) map[string]bool {
+func filterSlice(filter string) []string {
 	if filter == "" {
 		return nil
 	}
 
 	fs := strings.Split(strings.ToUpper(filter), ",")
-	fm := make(map[string]bool, len(fs))
-	for _, f := range fs {
-		fm[strings.TrimSpace(f)] = true
+	for i, f := range fs {
+		fs[i] = strings.TrimSpace(f)
 	}
-	return fm
+	return fs
+}
+
+func isFiltered(filter []string, v string) bool {
+	if len(filter) == 0 {
+		return false
+	}
+
+	for _, f := range filter {
+		if strings.EqualFold(f, v) {
+			return false
+		}
+	}
+	return true
 }
 
 func maxStringLen(s string, l int) int {
