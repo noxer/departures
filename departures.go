@@ -36,7 +36,7 @@ func main() {
 	flag.IntVar(&retries, "retries", 3, "Number of retries before giving up")
 	flag.DurationVar(&retryPause, "retry-pause", time.Second, "Pause between retries")
 	flag.IntVar(&min, "min", 60, "Number of minutes you want to see the departures for")
-	flag.BoolVar(&forceColor, "force-color", false, "Use this flasg to enforce color output even if the terminal does not report support")
+	flag.BoolVar(&forceColor, "force-color", false, "Use this flag to enforce color output even if the terminal does not report support")
 	flag.StringVar(&search, "search", "", "Search for the stop name to get the stop ID")
 	flag.Parse()
 
