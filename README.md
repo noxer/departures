@@ -54,3 +54,21 @@ You can limit the width of the output to make it fit your terminal or for use in
  100 S+U  10:58
  RE1 Fran 10:59 (+1)
 ```
+
+## wtfutil
+This utility was originally created for use in wtfutil. You can use the following config snippet to get started.
+
+```yml
+    departures:
+      args: ["-id=900000100003", "-force-color", "-retries=100", "-retry-pause=5s"]
+      cmd: "departures"
+      enabled: true
+      position:
+        top: 0
+        left: 0
+        height: 1
+        width: 1
+      refreshInterval: 60
+      type: cmdrunner
+      title: Departures
+```
