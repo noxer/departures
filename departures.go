@@ -267,7 +267,7 @@ func filterMap(filter string) map[string]bool {
 		return nil
 	}
 
-	fs := strings.Split(filter, ",")
+	fs := strings.Split(strings.ToUpper(filter), ",")
 	fm := make(map[string]bool, len(fs))
 	for _, f := range fs {
 		fm[strings.TrimSpace(f)] = true
