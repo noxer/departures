@@ -100,13 +100,13 @@ func main() {
 		if dep.When.Before(from) || dep.When.After(until) {
 			continue
 		}
-		if fm != nil && !fm[dep.Line.Product] {
+		if fm != nil && !fm[strings.ToUpper(dep.Line.Product)] {
 			continue
 		}
-		if fd != nil && !fd[dep.Direction] {
+		if fd != nil && !fd[strings.ToUpper(dep.Direction)] {
 			continue
 		}
-		if fl != nil && !fl[dep.Line.Name] {
+		if fl != nil && !fl[strings.ToUpper(dep.Line.Name)] {
 			continue
 		}
 
@@ -128,13 +128,13 @@ func main() {
 		if dep.When.Before(from) || dep.When.After(until) {
 			continue
 		}
-		if fm != nil && !fm[dep.Line.Product] {
+		if fm != nil && !fm[strings.ToUpper(dep.Line.Product)] {
 			continue
 		}
-		if fd != nil && !fd[dep.Direction] {
+		if fd != nil && !fd[strings.ToUpper(dep.Direction)] {
 			continue
 		}
-		if fl != nil && !fl[dep.Line.Name] {
+		if fl != nil && !fl[strings.ToUpper(dep.Line.Name)] {
 			continue
 		}
 
