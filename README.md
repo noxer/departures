@@ -44,9 +44,9 @@ M4 S Hackescher Markt 11:07 (-1)
 M4 S Hackescher Markt 11:13
 ```
 
-You can limit the width of the output to make it fit your terminal or for use in wtfutil*.
+You can limit the width of the output to make it fit your terminal or for use in [wtfutil](https://github.com/wtfutil/wtf)*.
 
-(* wtfutil sets the WTF_WIDGET_WIDTH environment variable which is automatically recognized by departures)
+(* wtfutil sets the `WTF_WIDGET_WIDTH` environment variable which is automatically recognized by departures)
 
 ```bash
 ~$ departures -id="900000100003" -width=20
