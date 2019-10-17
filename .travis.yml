@@ -3,19 +3,19 @@ go:
 - 1.x
 before_deploy:
 - GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o departures
-- tar -czf departures_linux_amd64.tar.gz departures README.md
+- tar -czf departures_linux_amd64.tar.gz departures README.md LICENSE
 - GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o departures
-- tar -czf departures_linux_386.tar.gz departures README.md
+- tar -czf departures_linux_386.tar.gz departures README.md LICENSE
 - GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o departures
-- tar -czf departures_macos_amd64.tar.gz departures README.md
+- tar -czf departures_macos_amd64.tar.gz departures README.md LICENSE
 - GOOS=darwin GOARCH=386 go build -ldflags="-s -w" -o departures
-- tar -czf departures_macos_386.tar.gz departures README.md
+- tar -czf departures_macos_386.tar.gz departures README.md LICENSE
 - GOOS=freebsd GOARCH=amd64 go build -ldflags="-s -w" -o departures
-- tar -czf departures_freebsd_amd64.tar.gz departures README.md
+- tar -czf departures_freebsd_amd64.tar.gz departures README.md LICENSE
 - GOOS=freebsd GOARCH=386 go build -ldflags="-s -w" -o departures
-- tar -czf departures_freebsd_386.tar.gz departures README.md
+- tar -czf departures_freebsd_386.tar.gz departures README.md LICENSE
 - GOOS=linux GOARCH=arm GOARM=5 go build -ldflags="-s -w" -o departures
-- tar -czf departures_raspi.tar.gz departures README.md
+- tar -czf departures_raspi.tar.gz departures README.md LICENSE
 deploy:
   provider: releases
   api_key:
