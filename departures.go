@@ -28,8 +28,9 @@ func main() {
 		forceColor        bool
 		min               int
 		search            string
+		stationName       string
 	)
-	flag.StringVar(&id, "id", "900000100003", "ID of the stop")
+	flag.StringVar(&id, "id", "", "ID of the stop")
 	flag.StringVar(&filterMode, "filter-mode", "", "Filter the list for this mode of transporation (Comma separated)")
 	flag.StringVar(&filterDestination, "filter-destination", "", "Filter the list for this destination (Comma separated)")
 	flag.StringVar(&filterLine, "filter-line", "", "Filter the list for this line (Comma separated)")
@@ -54,8 +55,7 @@ func main() {
 
 	// check if the user just wants to find the station ID
 	if search != "" {
-		var stations []station
-		err = getJSON(&stations, "https://2.bvg.transport.rest/locations?query=%s&poi=false&addresses=false", search)
+		stations, err := searchStations(search)
 		if err != nil {
 			fmt.Println("Could not query stations")
 			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
