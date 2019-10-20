@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/fatih/color"
+	"gopkg.in/AlecAivazis/survey.v1"
 )
 
 func main() {
@@ -38,6 +39,7 @@ func main() {
 	flag.IntVar(&min, "min", 60, "Number of minutes you want to see the departures for")
 	flag.BoolVar(&forceColor, "force-color", false, "Use this flag to enforce color output even if the terminal does not report support")
 	flag.StringVar(&search, "search", "", "Search for the stop name to get the stop ID")
+	flag.StringVar(&stationName, "station", "", "Fetch departures for given station. Ignored if id is provided")
 	flag.Parse()
 
 	// ensure valid retry values
@@ -66,6 +68,22 @@ func main() {
 		}
 
 		return
+	}
+
+	// search of the station and provide user option to choose
+	if id == "" && stationName != "" {
+		s, err := promptForStation(stationName)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			id = s.ID
+		}
+	}
+
+	// set default id if empty
+	if id == "" {
+		fmt.Println("station id is empty. Defaulting to: 900000100003")
+		id = "900000100003"
 	}
 
 	// set the color mode
@@ -151,6 +169,50 @@ func main() {
 			departureColor("%s", departureTime(dep)),
 		)
 	}
+}
+
+func searchStations(name string) ([]station, error) {
+	var stations []station
+	err := getJSON(&stations, "https://2.bvg.transport.rest/locations?query=%s&poi=false&addresses=false", name)
+
+	return stations, err
+}
+
+func promptForStation(name string) (*station, error) {
+	stations, err := searchStations(name)
+	if err != nil {
+		return nil, fmt.Errorf("could not query stations")
+	}
+
+	if len(stations) == 0 {
+		// no stations found
+		return nil, fmt.Errorf("could not find matching stations")
+	}
+
+	// set first result as fallback
+	fallback := stations[0].Name
+
+	// convert to map[string]station to get station after user prompt
+	var options []string
+	optionStation := map[string]*station{}
+	for _, s := range stations {
+		options = append(options, s.Name)
+		optionStation[s.Name] = &s
+	}
+
+	prompt := &survey.Select{
+		Message: "Choose a station:",
+		Options: options,
+		Default: fallback,
+	}
+
+	var choice string
+	if err = survey.AskOne(prompt, &choice, nil); err != nil {
+		fmt.Println("Failed to get answer on station list. Defaulting to", fallback)
+		choice = fallback
+	}
+
+	return optionStation[choice], nil
 }
 
 func getJSON(v interface{}, urlFormat string, values ...interface{}) error {
