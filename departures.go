@@ -40,7 +40,7 @@ func main() {
 	flag.IntVar(&min, "min", 60, "Number of minutes you want to see the departures for")
 	flag.BoolVar(&forceColor, "force-color", false, "Use this flag to enforce color output even if the terminal does not report support")
 	flag.StringVar(&search, "search", "", "Search for the stop name to get the stop ID")
-	flag.StringVar(&stationName, "station", "", "Fetch departures for given station. Ignored if id is provided")
+	flag.StringVar(&stationName, "station", "", "Fetch departures for given station. Ignored if ID is provided")
 	flag.Parse()
 
 	// ensure valid retry values
@@ -82,7 +82,7 @@ func main() {
 
 	// set default id if empty
 	if id == "" {
-		fmt.Println("station id is empty. Defaulting to: 900000100003")
+		fmt.Println("station ID is empty. Defaulting to: 900000100003")
 		id = "900000100003"
 	}
 
