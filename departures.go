@@ -184,11 +184,12 @@ func promptForStation(name string) (*station, error) {
 		return nil, fmt.Errorf("could not query stations")
 	}
 
-	if len(stations) == 0 {
+	if l := len(stations); l == 0 {
 		// no stations found
 		return nil, fmt.Errorf("could not find matching stations")
+	} else if l == 1 {
+		return &stations[0], nil
 	}
-
 	// set first result as fallback
 	fallback := stations[0].Name
 
