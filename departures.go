@@ -195,10 +195,10 @@ func promptForStation(name string) (*station, error) {
 
 	// convert to map[string]station to get station after user prompt
 	var options []string
-	optionStation := map[string]*station{}
+	optionStation := map[string]station{}
 	for _, s := range stations {
 		options = append(options, s.Name)
-		optionStation[s.Name] = &s
+		optionStation[s.Name] = s
 	}
 
 	prompt := &survey.Select{
@@ -213,7 +213,8 @@ func promptForStation(name string) (*station, error) {
 		choice = fallback
 	}
 
-	return optionStation[choice], nil
+	s := optionStation[choice]
+	return &s, nil
 }
 
 func getJSON(v interface{}, urlFormat string, values ...interface{}) error {
