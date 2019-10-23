@@ -42,7 +42,7 @@ func main() {
 	flag.BoolVar(&forceColor, "force-color", false, "Use this flag to enforce color output even if the terminal does not report support")
 	flag.StringVar(&search, "search", "", "Search for the stop name to get the stop ID")
 	flag.StringVar(&stationName, "station", "", "Fetch departures for given station. Ignored if ID is provided")
-	flag.BoolVar(&verbose, "verbose", false, "Be verbose and show additional information(nmode of transportataion, operator and additional remarks).")
+	flag.BoolVar(&verbose, "verbose", false, "Be verbose and show additional information (mode of transportataion, operator and additional remarks).")
 	flag.Parse()
 
 	// ensure valid retry values
@@ -112,10 +112,7 @@ func main() {
 	fl := filterSlice(filterLine)
 
 	// calculate the length of the columns
-	lenName := 0
-	lenDir := 0
-	lenDep := 0
-	lenRem := 0
+	var lenName, lenDir, lenDep, lenRem int
 	from := time.Now().Add(-2 * time.Minute)
 	until := time.Now().Add(time.Hour)
 	filteredDeps := deps[:0] // no need to waste space
@@ -123,7 +120,6 @@ func main() {
 		if dep.When.Before(from) || dep.When.After(until) {
 			continue
 		}
-		fmt.Println(dep)
 		// trim unnecessary whitespace
 		dep.Line.Product = strings.TrimSpace(dep.Line.Product)
 		dep.Direction = strings.TrimSpace(dep.Direction)
@@ -162,7 +158,7 @@ func main() {
 	}
 
 	// render the columns
-	for _, dep := range filteredDeps {	
+	for _, dep := range filteredDeps {
 		departureColor := color.HiGreenString
 		if dep.Delay > 0 {
 			departureColor = color.RedString
@@ -175,34 +171,33 @@ func main() {
 			rightPad(dep.Direction, lenDir),
 			departureColor("%s", departureTime(dep)),
 		)
-		if verbose {
-			fmt.Println(
-				leftPad(rightPad("Operator", lenRem), (lenRem+lenName+1)),
-				":",
-				dep.Line.Operator.Name,
-			)
-			fmt.Println(
-				leftPad(rightPad("Type", lenRem), (lenRem+lenName+1)),
-				":",
-				dep.Line.Product,
-			)
-			for _, rem := range dep.Remarks {
-				if rem.Text != "" {
-					rem.Type = strings.Title(rem.Type)
-					remarkColor := color.WhiteString
-					if rem.Type == "Warning"{
-						remarkColor = color.RedString
-					}
-					fmt.Println(
-						remarkColor("%s", leftPad(rightPad(rem.Type, lenRem), (lenRem+lenName+1))),
-						":",
-						rem.Text,
-					)
-				}
-			}
-
+		if !verbose {
+			continue
 		}
-		
+		fmt.Println(
+			leftPad(rightPad("Operator", lenRem), (lenRem+lenName+1)),
+			":",
+			dep.Line.Operator.Name,
+		)
+		fmt.Println(
+			leftPad(rightPad("Type", lenRem), (lenRem+lenName+1)),
+			":",
+			dep.Line.Product,
+		)
+		for _, rem := range dep.Remarks {
+			if rem.Text != "" {
+				rem.Type = strings.Title(rem.Type)
+				remarkColor := color.WhiteString
+				if rem.Type == "Warning"{
+					remarkColor = color.RedString
+				}
+				fmt.Println(
+					remarkColor("%s", leftPad(rightPad(rem.Type, lenRem), (lenRem+lenName+1))),
+					":",
+					rem.Text,
+				)
+			}
+		}	
 	}
 }
 
