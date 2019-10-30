@@ -174,21 +174,21 @@ func main() {
 		if !verbose {
 			continue
 		}
+		remarkColor := color.WhiteString
 		fmt.Println(
-			leftPad(rightPad("Operator", lenRem), (lenRem+lenName+1)),
+			remarkColor("%s", leftPad(rightPad("Operator", lenRem), (lenRem+lenName+1))),
 			":",
 			dep.Line.Operator.Name,
 		)
 		fmt.Println(
-			leftPad(rightPad("Type", lenRem), (lenRem+lenName+1)),
+			remarkColor("%s", leftPad(rightPad("Type", lenRem), (lenRem+lenName+1))),
 			":",
 			dep.Line.Product,
 		)
 		for _, rem := range dep.Remarks {
 			if rem.Text != "" {
 				rem.Type = strings.Title(rem.Type)
-				remarkColor := color.WhiteString
-				if rem.Type == "Warning"{
+				if rem.Type == "Warning" {
 					remarkColor = color.RedString
 				}
 				fmt.Println(
@@ -197,7 +197,7 @@ func main() {
 					rem.Text,
 				)
 			}
-		}	
+		}
 	}
 }
 
