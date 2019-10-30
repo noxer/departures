@@ -137,10 +137,8 @@ func main() {
 		if isFiltered(fl, dep.Line.Name) {
 			continue
 		}
-		if bicycle {
-			if filterBike(dep) {
-				continue
-			}
+		if bicycle && filterBike(dep) {
+			continue
 		}
 
 		// the entry survived the filters, append it to the filtered list
