@@ -77,6 +77,26 @@ RE4 Rathenow, Bhf     20:25 (+11)
 RE4 Ludwigsfelde, Bhf 20:44
 ```
 
+You can show additional informations like warning bicycle conveyance etc. by adding the '-verbose' argument
+
+```bash
+~$ departures -id 900000029305
+M32 S+U Rathaus Spandau    20:20
+RE4 Rathenow, Bhf          20:23 (+9)
+
+~$ departures -id 900000029305 -verbose
+M32 S+U Rathaus Spandau    20:20
+    Operator : Berliner Verkehrsbetriebe
+    Type     : bus
+    Hint     : barrier-free
+RE4 Rathenow, Bhf          20:23 (+9)
+    Operator : ODEG Ostdeutsche Eisenbahn GmbH
+    Type     : regional
+    Hint     : barrier-free
+    Hint     : Bicycle conveyance
+    Hint     : Fahrradmitnahme leicht gemacht: www.vbb.de/radimregio
+ ```
+
 ## wtfutil
 This utility was originally created for use in wtfutil. You can use the following config snippet to get started.
 
