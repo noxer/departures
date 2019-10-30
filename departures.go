@@ -30,6 +30,7 @@ func main() {
 		search            string
 		stationName       string
 		verbose           bool
+		bicycle           bool
 	)
 	flag.StringVar(&id, "id", "", "ID of the stop")
 	flag.StringVar(&filterMode, "filter-mode", "", "Filter the list for this mode of transporation (Comma separated)")
@@ -43,6 +44,7 @@ func main() {
 	flag.StringVar(&search, "search", "", "Search for the stop name to get the stop ID")
 	flag.StringVar(&stationName, "station", "", "Fetch departures for given station. Ignored if ID is provided")
 	flag.BoolVar(&verbose, "verbose", false, "Be verbose and show additional information (mode of transportataion, operator and additional remarks).")
+	flag.BoolVar(&bicycle, "bicycle", false, "Only show connections that allow bicycle conveyance.")
 	flag.Parse()
 
 	// ensure valid retry values
@@ -133,6 +135,9 @@ func main() {
 			continue
 		}
 		if isFiltered(fl, dep.Line.Name) {
+			continue
+		}
+		if bicycle && filterBike(dep) {
 			continue
 		}
 
@@ -392,4 +397,13 @@ func maxStringLen(s string, l int) int {
 func intEnv(key string) int {
 	i, _ := strconv.Atoi(os.Getenv(key))
 	return i
+}
+
+func filterBike(r result) bool {
+	for _, rem := range r.Remarks {
+		if strings.TrimSpace(rem.Code) == "FB" {
+			return false
+		}
+	}
+	return true
 }
