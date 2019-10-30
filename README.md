@@ -58,6 +58,25 @@ You can limit the width of the output to make it fit your terminal or for use in
  RE1 Fran 10:59 (+1)
 ```
 
+You can filter only connections that allow you to take a bike by adding the '-bicycle' argument.
+
+```bash
+~$ departures -id 900000029305
+M32 S+U Rathaus Spandau    20:02
+M32 Staaken, Heidebergplan 20:10 (-1)
+M32 S+U Rathaus Spandau    20:20
+RE4 Rathenow, Bhf          20:25 (+11)
+M32 Staaken, Heidebergplan 20:31
+M32 S+U Rathaus Spandau    20:40
+RE4 Ludwigsfelde, Bhf      20:44
+M32 Staaken, Heidebergplan 20:51
+M32 S+U Rathaus Spandau    21:00
+
+~$ departures -id 900000029305 -bicycle
+RE4 Rathenow, Bhf     20:25 (+11)
+RE4 Ludwigsfelde, Bhf 20:44
+```
+
 ## wtfutil
 This utility was originally created for use in wtfutil. You can use the following config snippet to get started.
 
