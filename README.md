@@ -47,6 +47,22 @@ M4 S Hackescher Markt 11:07 (-1)
 M4 S Hackescher Markt 11:13
 ```
 
+You can provide the station name as a string in alternative to the station id. The `-station` flag will be ignored if `-id` is used. 
+
+```bash
+~$ departures -station Hauptbahnhof
+? Choose a station:  [Use arrows to move, space to select, type to filter]
+> S+U Berlin Hauptbahnhof
+  S Potsdam Hauptbahnhof
+  Dresden, Hbf
+  Leipzig, Hbf
+  Rostock, Hbf
+? Choose a station: S+U Berlin Hauptbahnhof
+    RE2 S Ostkreuz                                      21:37 (+2)
+     M8 Moabit, Lüneburger Str.                         21:37
+    M10 S+U Warschauer Str.                             21:37
+```
+
 You can limit the width of the output to make it fit your terminal or for use in [wtfutil](https://github.com/wtfutil/wtf)*.
 
 (* wtfutil sets the `WTF_WIDGET_WIDTH` environment variable which is automatically recognized by departures)
