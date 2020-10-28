@@ -8,8 +8,6 @@ before_deploy:
 - tar -czf departures_linux_386.tar.gz departures README.md LICENSE
 - GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o departures
 - tar -czf departures_macos_amd64.tar.gz departures README.md LICENSE
-- GOOS=darwin GOARCH=386 go build -ldflags="-s -w" -o departures
-- tar -czf departures_macos_386.tar.gz departures README.md LICENSE
 - GOOS=freebsd GOARCH=amd64 go build -ldflags="-s -w" -o departures
 - tar -czf departures_freebsd_amd64.tar.gz departures README.md LICENSE
 - GOOS=freebsd GOARCH=386 go build -ldflags="-s -w" -o departures
@@ -24,7 +22,6 @@ deploy:
   - departures_linux_amd64.tar.gz
   - departures_linux_386.tar.gz
   - departures_macos_amd64.tar.gz
-  - departures_macos_386.tar.gz
   - departures_freebsd_amd64.tar.gz
   - departures_freebsd_386.tar.gz
   - departures_raspi.tar.gz
