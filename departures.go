@@ -96,7 +96,7 @@ func main() {
 	// request the departures
 	var deps []result
 	for i := 0; i < retries+1; i++ {
-		err = getJSON(&deps, "https://2.bvg.transport.rest/stations/%s/departures?duration=%d", id, min)
+		err = getJSON(&deps, "https://v5.vbb.transport.rest/stops/%s/departures?duration=%d", id, min)
 		if err == nil {
 			break
 		}
@@ -208,7 +208,7 @@ func main() {
 
 func searchStations(name string) ([]station, error) {
 	var stations []station
-	err := getJSON(&stations, "https://2.bvg.transport.rest/locations?query=%s&poi=false&addresses=false", name)
+	err := getJSON(&stations, "https://v5.vbb.transport.rest/locations?query=%s&poi=false&addresses=false", name)
 
 	return stations, err
 }
