@@ -132,4 +132,4 @@ This utility was originally created for use in wtfutil. You can use the followin
 ```
 
 ## attribution
-I'm using https://2.bvg.transport.rest to request the current timetable data. Thanks to [derhuerst](https://github.com/derhuerst).
+We're using https://v5.bvg.transport.rest to request the current timetable data. Thanks to [derhuerst](https://github.com/derhuerst).
