@@ -12,54 +12,41 @@ import (
 	"unicode/utf8"
 
 	"github.com/fatih/color"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"gopkg.in/AlecAivazis/survey.v1"
 )
 
 func main() {
 	// parse the command line arguments
-	var (
-		id                string
-		filterMode        string
-		filterDestination string
-		filterLine        string
-		width             int
-		retries           int
-		retryPause        time.Duration
-		forceColor        bool
-		min               int
-		search            string
-		stationName       string
-		verbose           bool
-		bicycle           bool
-	)
-	flag.StringVar(&id, "id", "", "ID of the stop")
-	flag.StringVar(&filterMode, "filter-mode", "", "Filter the list for this mode of transporation (Comma separated)")
-	flag.StringVar(&filterDestination, "filter-destination", "", "Filter the list for this destination (Comma separated)")
-	flag.StringVar(&filterLine, "filter-line", "", "Filter the list for this line (Comma separated)")
-	flag.IntVar(&width, "width", intEnv("WTF_WIDGET_WIDTH"), "Width of the output")
-	flag.IntVar(&retries, "retries", 3, "Number of retries before giving up")
-	flag.DurationVar(&retryPause, "retry-pause", time.Second, "Pause between retries")
-	flag.IntVar(&min, "min", 60, "Number of minutes you want to see the departures for")
-	flag.BoolVar(&forceColor, "force-color", false, "Use this flag to enforce color output even if the terminal does not report support")
-	flag.StringVar(&search, "search", "", "Search for the stop name to get the stop ID")
-	flag.StringVar(&stationName, "station", "", "Fetch departures for given station. Ignored if ID is provided")
-	flag.BoolVar(&verbose, "verbose", false, "Be verbose and show additional information (mode of transportataion, operator and additional remarks).")
-	flag.BoolVar(&bicycle, "bicycle", false, "Only show connections that allow bicycle conveyance.")
+	id := flag.String("id", "", "ID of the stop")
+	filterMode := flag.String("filter-mode", "", "Filter the list for this mode of transporation (Comma separated)")
+	filterDestination := flag.String("filter-destination", "", "Filter the list for this destination (Comma separated)")
+	filterLine := flag.String("filter-line", "", "Filter the list for this line (Comma separated)")
+	width := flag.Int("width", intEnv("WTF_WIDGET_WIDTH"), "Width of the output")
+	retries := flag.Int("retries", 3, "Number of retries before giving up")
+	retryPause := flag.Duration("retry-pause", time.Second, "Pause between retries")
+	min := flag.Int("min", 60, "Number of minutes you want to see the departures for")
+	forceColor := flag.Bool("force-color", false, "Use this flag to enforce color output even if the terminal does not report support")
+	search := flag.String("search", "", "Search for the stop name to get the stop ID")
+	stationName := flag.String("station", "", "Fetch departures for given station. Ignored if ID is provided")
+	verbose := flag.Bool("verbose", false, "Be verbose and show additional information (mode of transportataion, operator and additional remarks)")
+	bicycle := flag.Bool("bicycle", false, "Only show connections that allow bicycle conveyance")
 	flag.Parse()
 
 	// ensure valid retry values
-	if retries < 0 {
-		retries = 0
+	if *retries < 0 {
+		*retries = 0
 	}
-	if retryPause < 0 {
-		retryPause = 0
+	if *retryPause < 0 {
+		*retryPause = 0
 	}
 
 	var err error
 
 	// check if the user just wants to find the station ID
-	if search != "" {
-		stations, err := searchStations(search)
+	if *search != "" {
+		stations, err := searchStations(*search)
 		if err != nil {
 			fmt.Println("Could not query stations")
 			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
@@ -75,32 +62,32 @@ func main() {
 	}
 
 	// search of the station and provide user option to choose
-	if id == "" && stationName != "" {
-		s, err := promptForStation(stationName)
+	if *id == "" && *stationName != "" {
+		s, err := promptForStation(*stationName)
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			id = s.ID
+			*id = s.ID
 		}
 	}
 
 	// set default id if empty
-	if id == "" {
+	if *id == "" {
 		fmt.Println("station ID is empty. Defaulting to: 900000100003")
-		id = "900000100003"
+		*id = "900000100003"
 	}
 
 	// set the color mode
-	color.NoColor = color.NoColor && !forceColor
+	color.NoColor = color.NoColor && !*forceColor
 
 	// request the departures
 	var deps []result
-	for i := 0; i < retries+1; i++ {
-		err = getJSON(&deps, "https://v5.vbb.transport.rest/stops/%s/departures?duration=%d", id, min)
+	for i := 0; i < *retries+1; i++ {
+		err = getJSON(&deps, "https://v5.vbb.transport.rest/stops/%s/departures?duration=%d", *id, *min)
 		if err == nil {
 			break
 		}
-		time.Sleep(retryPause)
+		time.Sleep(*retryPause)
 	}
 	if err != nil {
 		fmt.Println("Could not query departures")
@@ -109,9 +96,9 @@ func main() {
 	}
 
 	// initialize the filters
-	fm := filterSlice(filterMode)
-	fd := filterSlice(filterDestination)
-	fl := filterSlice(filterLine)
+	fm := filterSlice(*filterMode)
+	fd := filterSlice(*filterDestination)
+	fl := filterSlice(*filterLine)
 
 	// calculate the length of the columns
 	var lenName, lenDir, lenDep, lenRem int
@@ -122,6 +109,7 @@ func main() {
 		if dep.When.Before(from) || dep.When.After(until) {
 			continue
 		}
+
 		// trim unnecessary whitespace
 		dep.Line.Product = strings.TrimSpace(dep.Line.Product)
 		dep.Direction = strings.TrimSpace(dep.Direction)
@@ -137,7 +125,7 @@ func main() {
 		if isFiltered(fl, dep.Line.Name) {
 			continue
 		}
-		if bicycle && filterBike(dep) {
+		if *bicycle && filterBike(dep) {
 			continue
 		}
 
@@ -155,8 +143,8 @@ func main() {
 	}
 
 	// adjust the column length
-	if width > 0 {
-		lenDir = width - lenName - lenDep - 2
+	if *width > 0 {
+		lenDir = *width - lenName - lenDep - 2
 		if lenDir < 1 {
 			lenDir = 1
 		}
@@ -176,9 +164,10 @@ func main() {
 			rightPad(dep.Direction, lenDir),
 			departureColor("%s", departureTime(dep)),
 		)
-		if !verbose {
+		if !*verbose {
 			continue
 		}
+
 		remarkColor := color.WhiteString
 		fmt.Println(
 			remarkColor("%s", leftPad(rightPad("Operator", lenRem), (lenRem+lenName+1))),
@@ -192,7 +181,7 @@ func main() {
 		)
 		for _, rem := range dep.Remarks {
 			if rem.Text != "" {
-				rem.Type = strings.Title(rem.Type)
+				rem.Type = cases.Title(language.English).String(rem.Type)
 				if rem.Type == "Warning" {
 					remarkColor = color.RedString
 				}
