@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"maps"
 	"os"
 	"slices"
 	"strconv"
@@ -21,6 +22,7 @@ import (
 func main() {
 	// parse the command line arguments
 	id := flag.String("id", "", "ID of the stop")
+	network := flag.String("network", "vbb", "Network to query: vbb, bvg, db (or a full base URL of another hafas host)")
 	filterMode := flag.String("filter-mode", "", "Filter the list for this mode of transporation (Comma separated)")
 	filterDestination := flag.String("filter-destination", "", "Filter the list for this destination (Comma separated)")
 	filterLine := flag.String("filter-line", "", "Filter the list for this line (Comma separated)")
@@ -39,8 +41,14 @@ func main() {
 	*retries = max(*retries, 0)
 	*retryPause = max(*retryPause, 0)
 
-	// create the API client for the VBB network (Berlin-Brandenburg)
-	client, err := api.New(api.NetworkVBB)
+	// resolve the requested network and create the API client
+	net, ok := api.ResolveNetwork(*network)
+	if !ok {
+		fmt.Fprintf(os.Stderr, "Unknown network %q. Valid networks: %s (or a full base URL).\n",
+			*network, strings.Join(slices.Sorted(maps.Keys(api.Networks)), ", "))
+		os.Exit(1)
+	}
+	client, err := api.New(net)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		os.Exit(1)
@@ -74,10 +82,10 @@ func main() {
 		}
 	}
 
-	// set default id if empty
+	// a station is required; there is no default
 	if *id == "" {
-		fmt.Println("station ID is empty. Defaulting to: 900100003")
-		*id = "900100003"
+		fmt.Fprintln(os.Stderr, "No station selected. Provide -id, or find one with -search or -station.")
+		os.Exit(1)
 	}
 
 	// set the color mode

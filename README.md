@@ -1,5 +1,5 @@
 # departures
-Show departure times for your Berlin public transport station
+Show departure times for public transport in Germany — VBB (Berlin & Brandenburg), BVG (Berlin) and Deutsche Bahn (nationwide).
 
 ![screenshot of a departure table](https://raw.githubusercontent.com/noxer/departures/master/images/screen0.png)
 
@@ -12,6 +12,19 @@ go install github.com/noxer/departures@latest
 ```
 Now you should have the `departures` binary installed in your `$GOPATH/bin` directory. You can call it from there or add the directory to your `$PATH`.
 
+## networks
+By default `departures` queries VBB. Use `-network` to pick another network from [transport.rest](https://transport.rest/):
+
+| value | network |
+|-------|---------|
+| `vbb` | VBB — Berlin & Brandenburg (default) |
+| `bvg` | BVG — Berlin local transit |
+| `db`  | Deutsche Bahn — nationwide (Germany) |
+
+You can also pass the full base URL of any other compatible hafas host, e.g. `-network=https://v6.rmv.transport.rest`.
+
+Station IDs are network-specific, so always look yours up with `-search` on the same network you intend to query.
+
 ## usage
 First you need to find out the ID of your station. To do this run the tool with the `-search` parameter.
 ```bash
@@ -22,6 +35,12 @@ Found 5 station(s):
   900100026 - S+U Alexanderplatz/Gontardstr.
   900100005 - U Alexanderplatz [Tram]
   900100031 - S+U Alexanderplatz/Memhardstr.
+```
+
+Add `-network` to search or query a different network. Deutsche Bahn, for example, spans all of Germany and uses numeric IDs (Berlin Hbf is `8011160`):
+```bash
+~$ departures -network=db -search="Berlin Hbf"
+~$ departures -network=db -id=8011160
 ```
 
 This should help you identify the station you want to look at. Now you can request the timetable for Alexanderplatz.
@@ -132,4 +151,4 @@ This utility was originally created for use in wtfutil. You can use the followin
 ```
 
 ## attribution
-We're using https://v6.vbb.transport.rest to request the current timetable data. Thanks to [derhuerst](https://github.com/derhuerst).
+We're using the [transport.rest](https://transport.rest/) APIs (VBB, BVG and Deutsche Bahn) to request the current timetable data. Thanks to [derhuerst](https://github.com/derhuerst).
